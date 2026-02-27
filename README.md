@@ -333,7 +333,10 @@ make build
 
 ### Terminal Prefill Not Working (Linux kernel 6.2+)
 
-The TIOCSTI ioctl is disabled by default in newer Linux kernels for security reasons. Enable it:
+`arsenal-ng` relies on this feature to prefill the terminal buffer. You have two options to enable this functionality, both of which come with security trade-offs.
+
+#### Option 1: Enable TIOCSTI Globally
+The TIOCSTI ioctl is disabled by default in newer Linux kernels for security reasons.
 
 ```bash
 # Temporary (current session only)
@@ -342,6 +345,18 @@ sudo sysctl -w dev.tty.legacy_tiocsti=1
 # Permanent (survives reboot)
 echo "dev.tty.legacy_tiocsti=1" | sudo tee /etc/sysctl.d/99-tiocsti.conf
 sudo sysctl --system
+```
+
+#### Option 2: Grant CAP_SYS_ADMIN Capability
+Instead of modifying system-wide settings, you can grant the `CAP_SYS_ADMIN` capability specifically to the arsenal-ng binary.
+CAP_SYS_ADMIN is powerful and virtually equivalent to `root` access. Use this method only if you fully understand the risks.
+
+```Bash
+# Ensure 'setcap' is installed (Debian/Kali/Ubuntu)
+sudo apt-get install libcap2-bin
+
+# Grant the required capability to the binary
+sudo setcap "cap_sys_admin+ep" $(which arsenal-ng)
 ```
 
 ## 🤝 Contributing
